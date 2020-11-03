@@ -3,7 +3,9 @@ var color = require('chalk');
 const weather = require("weather-js");
 const db = require("quick.db");
 const ms = require("parse-ms");
-const { prefix, token, status, play, ownerid, online } = require('./config.json');
+const snekfetch = require('snekfetch');
+const fsn = require('fs-nextra');
+const { prefix, token, status, play, ownerid, online, url } = require('./config.json');
 
 const client = new Discord.Client();
 
@@ -14,7 +16,8 @@ client.on('ready', () => {
         status: (online),
         activity: {
             name: (status),
-            type: (play)
+            type: (play),
+             url: (url)
         }
     });
 });
@@ -71,17 +74,17 @@ message.channel.send(pingEmbed);
 	.setColor("RANDOM")
 	.setTitle('Help')
 	.setDescription('This is the help command')
-    //.setThumbnail('https://vignette.wikia.nocookie.net/superfanon/images/2/22/Pickle_Man.jpg/revision/latest?cb=20170826192908')
     .setThumbnail(client.user.displayAvatarURL())
 	.addFields(
 		{ name: '__Commands__', value: 'Bot Prefix is ``p!``' },
 		{ name: '__Utility Commands__⚙️', value: '``p!ping``, ``p!uptime``, ``p!serverinfo``, ``p!botinfo``, ``p!userinfo``, ``p!invite``', inline: true },
-		{ name: '__Fun Commands__🤖', value: '``p!8ball``, ``p!pepe``, ``p!rate``, ``p!roll`` ``p!remindme``, ``p!weather location``', inline: true },
+		{ name: '__Fun Commands__🤖', value: '``p!8ball``, ``p!pepe``, ``p!rate``, ``p!roll``, ``p!love``, ``p!coinflip``, ``p!remindme``, ``p!weather``', inline: true },
         { name: '__Mod Commands__🛠', value: '``p!kick reason``, ``p!ban reason``, ``p!warn reason``, ``p!say``', inline: true },
-        { name: '__Money Commands__💸', value: '``p!bal``, ``p!deposit``, ``p!withdraw``, ``p!work``, ``p!monthly``, ``p!weeky``, ``p!daily``, ``p!profile``, ``p!store``, ``p!buy``, ``p!sell``, ``p!roulette``', inline: true },
+        { name: '__Money Commands__💸', value: '``p!bal``, ``p!deposit``, ``p!withdraw``, ``p!work``, ``p!monthly``, ``p!weekly``, ``p!daily``, ``p!profile``, ``p!store``, ``p!buy``, ``p!sell``, ``p!roulette``', inline: true },
 	)
 	.setTimestamp()
 	.setFooter('Made by ♡𝔹𝕝𝕦𝕖♡#6268');
+    console.log(`${message.author.username} used the help command`)
 
 message.channel.send(helpEmbed);
     }
@@ -139,6 +142,7 @@ message.channel.send(helpEmbed);
         if (!member) return message.reply('pls mention a member or write ID for BAN');
         if (!message.member.hasPermission('BAN_MEMBERS')) return message.reply('You has no permission for ban members');
         if (!member.manageable) return message.reply('I cant ban this member'); 
+     
         member.ban();
          }
     
@@ -198,7 +202,7 @@ const embed = new Discord.MessageEmbed()
   .addField('Current server', message.guild.name)
   .setColor("RANDOM")
   .setThumbnail(user.displayAvatarURL())
-  .setFooter(`Requested By:${message.author.username}`)
+  .setFooter(`Requested By: ${message.author.username}`)
 
 message.channel.send(embed);
     }
@@ -620,7 +624,7 @@ else if (command === 'deposit') {
         
     }
     
-    else if (command === 'weeky') {
+    else if (command === 'weekly') {
    let user = message.author;
   let timeout = 604800000;
   let amount = 500;
@@ -908,7 +912,7 @@ let colorbad = new Discord.MessageEmbed()
     if (monthly !== null && timeout - (Date.now() - monthly) > 0) {
         let time = ms(timeout - (Date.now() - monthly));
 
-        message.channel.send(`You already collected ur weekly reward, you can come back and collect it in **${time.days}d ${time.hours}h ${time.minutes}m ${time.seconds}s**!`)
+        message.channel.send(`You already collected ur monthly reward, you can come back and collect it in **${time.days}d ${time.hours}h ${time.minutes}m ${time.seconds}s**!`)
     } else {
     let embed = new Discord.MessageEmbed()
     .setAuthor(`Daily`, message.author.displayAvatarURL)
@@ -917,8 +921,10 @@ let colorbad = new Discord.MessageEmbed()
     .addField(`Collected`, amount)
 
     message.channel.send(embed)
+        
     db.add(`money_${message.guild.id}_${user.id}`, amount)
-    db.set(`monthly_${message.author.id}`, Date.now())
+    db.set(`monthly_${message.author.id}_${user.id}`, Date.now())
+        
     };
         
     }
@@ -929,6 +935,7 @@ let colorbad = new Discord.MessageEmbed()
         const text = new Discord.MessageEmbed()
         .addField('How to use', 'p!say text')
         if (saywhat < 1) return message.channel.send(text)
+         message.delete();
     const embed = new Discord.MessageEmbed()
     .setTitle(`${message.guild.name}`)
     .addField(`${message.author.username} Said:`, saywhat)
@@ -949,16 +956,78 @@ let colorbad = new Discord.MessageEmbed()
         
     }
     
-    else if (command === 'setstatus') {
+    else if (command === 'setgame') {
            if (message.author.id == (ownerid)) {
             var argresult = args.join(' ');
-            client.user.setStatus(argresult);
-            message.reply("It has been set!");
+            client.user.setActivity(argresult);
+            const embed = new Discord.MessageEmbed()
+            .addField("Game Set To:", argresult)
+            .setColor(0x00A2E8)
+            message.channel.send(embed);
+            console.log((color.blue`Bot game was set to: ${argresult}`))
         } else {
             message.reply("You do not have the permissions. Creator of the bot only. :x:");
             
         };
     
+    }
+    
+   else if (command === 'setstatus') {
+           if (message.author.id == (ownerid)) {
+            var argresult = args.join(' ');
+            client.user.setStatus(argresult);
+            const embed = new Discord.MessageEmbed()
+            .addField("Status Set To:", argresult)
+            .setColor(0x00A2E8)
+            message.channel.send(embed);
+            console.log((color.red`Bot status was set to: ${argresult}`))
+        } else {
+            message.reply("You do not have the permissions. Creator of the bot only. :x:");
+            
+        };
+     
+      }
+    
+    else if (command === 'clear') {
+        if(!message.member.hasPermission("MANAGE_MESSAGES")) return message.reply("You don't have premission to do that!");
+                const amount = parseInt(args[0]) + 1;
+
+        if (isNaN(amount)) {
+            return message.reply('that doesn\'t seem to be a valid number');
+        }
+
+        else if (amount < 1 || amount > 99) {
+            return message.reply('you need to input a number between 1 and 90.');
+        }
+
+        message.channel.bulkDelete(amount, true).catch(err => {
+            console.log(err);
+            message.channel.send('there was an error trying to clear messages in this channel');
+            
+       });
+       
+    }
+    
+    else if (command === 'love') {
+let person = message.mentions.members.first(message, args[0]);
+if(person.id === message.author.id) return message.channel.send("Can't mention yourself");
+
+        const love = Math.round(Math.random() * 100);
+        const loveIndex = Math.floor(love / 10);
+        const loveLevel = "💖".repeat(loveIndex) + "💔".repeat(10 - loveIndex);
+        
+        let loveEmbed = new Discord.MessageEmbed()
+        .setTitle("Love percentage")
+        .setDescription(`${message.author} loves ${person} this much: ${love}%\n\n${loveLevel}`)
+        message.channel.send(loveEmbed)
+        
+    }
+    
+    else if (command === 'coinflip') {
+              var coinflip = ['Heads!','Tails!'];
+      message.channel.send(coinflip[Math.floor(Math.random () * coinflip.length)]);
+
+        
    };
 });
 
