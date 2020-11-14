@@ -7,3 +7,5 @@
     <a><img src="https://img.shields.io/github/v/release/DeveloperJosh/Pickle-Bot" alt="Release" /></a>
   </p>
 </div>
+
+This Bot is made in discord.js
