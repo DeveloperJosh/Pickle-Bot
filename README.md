@@ -8,4 +8,4 @@
   </p>
 </div>
 
-This Bot is made in discord.js
+                                                        This Bot is made in discord.js
