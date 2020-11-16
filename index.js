@@ -10,7 +10,7 @@ const { prefix, token, status, play, ownerid, online, url } = require('./config.
 const client = new Discord.Client();
 
 client.on('ready', () => {
-    console.log(color.green(`Logged in as ${client.user.tag}!`));
+    console.log(color.green(`Logged in as ${client.user.tag}!, In ${client.guilds.cache.size} Servers!`));
 
     client.user.setPresence({
         status: (online),
@@ -78,7 +78,7 @@ message.channel.send(pingEmbed);
 	.addFields(
 		{ name: '__Commands__', value: 'Bot Prefix is ``p!``' },
 		{ name: '__Utility Commands__⚙️', value: '``p!ping``, ``p!uptime``, ``p!serverinfo``, ``p!botinfo``, ``p!userinfo``, ``p!invite``', inline: true },
-		{ name: '__Fun Commands__🤖', value: '``p!8ball``, ``p!pepe``, ``p!rate``, ``p!roll``, ``p!love``, ``p!coinflip``, ``p!remindme``, ``p!weather``', inline: true },
+		{ name: '__Fun Commands__🤖', value: '``p!8ball``, ``p!pepe``, ``p!rate``, ``p!roll``, ``p!love``, ``p!remindme``, ``p!hug``, ``p!weather``', inline: true },
         { name: '__Mod Commands__🛠', value: '``p!kick reason``, ``p!ban reason``, ``p!warn reason``, ``p!say``', inline: true },
         { name: '__Money Commands__💸', value: '``p!bal``, ``p!deposit``, ``p!withdraw``, ``p!work``, ``p!monthly``, ``p!weekly``, ``p!daily``, ``p!profile``, ``p!store``, ``p!buy``, ``p!sell``, ``p!roulette``', inline: true },
 	)
@@ -165,7 +165,7 @@ message.channel.send(helpEmbed);
         { name: 'Memory💻:', value: `${(process.memoryUsage().heapUsed / 1000 / 1000).toFixed(2)}` + "MBS"},
         { name: '**Created by👤:**', value: '♡𝔹𝕝𝕦𝕖♡#6268'},
         { name: '**Created at🗓:**', value: client.user.createdAt},
-        { name: '**Logo by🖼️**:', value: 'ジェイク#0944'},
+        { name: '**Logo by🖼️**:', value: 'Rai#0944'},
         { name: '**help🛠:**', value: 'Dm ♡𝔹𝕝𝕦𝕖♡#6268 for more info'},
 )
     .setColor("RANDOM")
@@ -1023,10 +1023,44 @@ if(person.id === message.author.id) return message.channel.send("Can't mention y
         
     }
     
-    else if (command === 'coinflip') {
-              var coinflip = ['Heads!','Tails!'];
-      message.channel.send(coinflip[Math.floor(Math.random () * coinflip.length)]);
+    else if (command === 'hug') {
+          let user = message.mentions.users.first();
+  if (message.mentions.users.size < 1) return message.reply('You must ping a user');
+             let pepe1 = new Discord.MessageEmbed()
+    .setTitle(`You huged ${user.tag}`)
+    .setColor("#00ff00")
+    .setImage("https://media.giphy.com/media/l2QDM9Jnim1YVILXa/giphy.gif");
 
+    let pepe2 = new Discord.MessageEmbed()
+    .setTitle(`You huged ${user.tag}`)
+    .setColor("#00ff00")
+    .setImage("https://media.giphy.com/media/JUwliZWcyDmTQZ7m9L/giphy.gif");
+
+    let pepe3 = new Discord.MessageEmbed()
+    .setTitle(`You huged ${user.tag}`)
+    .setColor("#00ff00")
+    .setImage("https://tenor.com/view/anime-hug-hug-hugs-anime-girl-anime-girl-hug-gif-16787485");
+
+    let pepe4 = new Discord.MessageEmbed()
+    .setTitle(`You huged ${user.tag}`)
+    .setColor("#00ff00")
+    .setImage("https://media1.tenor.com/images/506aa95bbb0a71351bcaa753eaa2a45c/tenor.gif?itemid=7552075");
+
+    let pepe5 = new Discord.MessageEmbed()
+    .setTitle(`You huged ${user.tag}`)
+    .setColor("#00ff00")
+    .setImage("https://media.tenor.com/images/b6d0903e0d54e05bb993f2eb78b39778/tenor.gif");
+
+    let pepe6 = new Discord.MessageEmbed()
+    .setTitle(`You huged ${user.tag}`)
+    .setColor("#00ff00")
+    .setImage("https://thumbs.gfycat.com/BlueDecimalAardwolf-small.gif");
+
+    let hugs = [pepe1, pepe2, pepe3, pepe4, pepe5, pepe6]
+
+    let hug = Math.floor((Math.random() * hugs.length));
+
+    message.channel.send(hugs[hug]);
         
    };
 });
