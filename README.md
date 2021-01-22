@@ -1,25 +1,105 @@
-# Pickle Thief Free
+# Setting Up Commando
 
+## Getting Super Powers
 
-| Script            | Description                               |
-| ----------------- | ----------------------------------------- |
-| `npm i discord.js`| Downloads discord                         |
-| `npm i quick.db`  | Downloads the database                    |
-| `node .`          | Starts the bot                            |
+How Mr.Commando's Index.js file looks
 
-## Discord Commands
+{% code title="Index.js" %}
+```javascript
+const { CommandoClient } = require('discord.js-commando');
+const { Structures } = require('discord.js');
+const { MessageEmbed } = require('discord.js');
+const DBL = require("dblapi.js");
+const path = require('path');
+const fs = require('fs');
+require('dotenv').config();
+Structures.extend('Guild', Guild => {
+  class MusicGuild extends Guild {
+    constructor(client, data) {
+      super(client, data);
+      this.musicData = {
+        queue: [],
+        isPlaying: false,
+        nowPlaying: null,
+        songDispatcher: null,
+        volume: 1
+      };
+      this.triviaData = {
+        isTriviaRunning: false,
+        wasTriviaEndCalled: false,
+        triviaQueue: [],
+        triviaScore: new Map()
+      };
+    }
+  }
+  return MusicGuild;
+});
 
-| Command                      | Description             |
-| ---------------------------- | ----------------------- |
-| `help`                       | Shows you all the cmds  |
+const client = new CommandoClient({
+    commandPrefix: process.env.PREFIX,
+    unknownCommandResponse: false,
+    owner: 'your id here',
+    invite: 'your support server here',
+    disableEveryone: true
+});
 
-## Notes
+client.registry
+    .registerDefaultTypes()
+    .registerGroups([
+    { id: 'fun', name: 'Fun' },
+    { id: 'mod', name: 'Moderation' },
+    { id: 'music', name: 'Music' },
+    { id: 'util', name: 'Utility' },
+    { id: 'other', name: 'Other' },
+    
+    ])
 
-- Avoid using `user` type.
-- Stick to the established code model
-- Prettier config file is included
+    .registerCommandsIn(path.join(__dirname, 'commands'));
 
-### Design choices when coding
+fs.readdir('./events/', (err, files) => {
+    if (err) return console.error;
+    files.forEach(file => {
+        if (!file.endsWith('.js')) return;
+        const evt = require(`./events/${file}`);
+        let evtName = file.split('.')[0];
+        console.log(`Loaded event '${evtName}'`);
+        client.on(evtName, evt.bind(null, client));
+    });
+});
 
-- I didn't want to use a command handler for this one
-- Avoid a lot of errors
+const dbl = new DBL(process.env.DBL, client);
+
+dbl.on('posted', () => {
+  console.log('Server count posted!');
+})
+
+dbl.on('error', e => {
+ console.log(`Oops! ${e}`);
+});
+
+client.login(process.env.TOKEN);
+```
+{% endcode %}
+
+The .env file use this to put your tokens and the prefix
+
+{% code title=".env" %}
+```javascript
+TOKEN=
+PREFIX=?
+DBL=
+```
+{% endcode %}
+
+The config.json file use this for your apt tokens
+
+{% code title="config.json" %}
+```javascript
+{
+    "YoutubeAPI": "",
+    "top": "",
+    "newsAPI": ""
+}
+```
+{% endcode %}
+
